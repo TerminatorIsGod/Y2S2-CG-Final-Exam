@@ -39,6 +39,8 @@ public:
 	 */
 	GLFWwindow* GetWindow();
 
+	void RestartScene(std::string name);
+
 	/**
 	 * Gets the width and height of the application window, in pixels
 	 */

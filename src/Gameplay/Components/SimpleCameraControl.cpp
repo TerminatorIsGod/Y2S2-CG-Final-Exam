@@ -9,11 +9,13 @@
 #include "Utils/ImGuiHelper.h"
 #include "Gameplay/InputEngine.h"
 #include "Application/Application.h"
+#include "Gameplay/Components/GUI/RectTransform.h"
+#include <Utils/GlmBulletConversions.h>
 
 SimpleCameraControl::SimpleCameraControl() :
 	IComponent(),
 	_mouseSensitivity({ 0.5f, 0.3f }),
-	_moveSpeeds(glm::vec3(1.0f)),
+	_moveSpeeds(glm::vec3(200.0f)),
 	_shiftMultipler(2.0f),
 	_currentRot(glm::vec2(0.0f)),
 	_isMousePressed(false)
@@ -21,57 +23,129 @@ SimpleCameraControl::SimpleCameraControl() :
 
 SimpleCameraControl::~SimpleCameraControl() = default;
 
+void SimpleCameraControl::Awake() {
+	_scene = GetGameObject()->GetScene();
+	Application& app = Application::Get();
+	_window = app.GetWindow();
+}
+
+void SimpleCameraControl::Movement(float deltaTime)
+{
+	auto _body = GetComponent<Gameplay::Physics::RigidBody>();
+
+	if (glfwGetKey(_window, GLFW_KEY_M) && _allowMouse == false) {
+		_isMousePressed = !_isMousePressed;
+		_allowMouse = true;
+
+		std::cout << "Changing mouse thing\n";
+	}
+	else if (!glfwGetKey(_window, GLFW_KEY_M)) {
+		_allowMouse = false;
+	}
+
+	if (GetGameObject()->GetPosition().z <= -50) {
+		Application& app = Application::Get();
+		app.RestartScene("scene");
+	}
+
+	if (_isMousePressed) {
+		glm::dvec2 currentMousePos;
+		glfwGetCursorPos(_window, &currentMousePos.x, &currentMousePos.y);
+
+		int wsizex, wsizey;
+
+		glfwGetWindowSize(_window, &wsizex, &wsizey);
+
+		float centerx = (wsizex / 2);
+		float centery = (wsizey / 2);
+
+		float xoffset = centerx - currentMousePos.x;
+		float yoffset = centery - currentMousePos.y;
+
+
+		glfwSetCursorPos(_window, centerx, centery);
+
+
+		_currentRot.x += static_cast<float>(xoffset) * _mouseSensitivity.x;  //_currentRot.x += static_cast<float>(currentMousePos.x - _prevMousePos.x) * _mouseSensitivity.x;
+		_currentRot.y += static_cast<float>(yoffset) * _mouseSensitivity.y;
+		//std::cout << "\nY Rot: " << _currentRot.y;
+		if (_currentRot.y > 172)
+			_currentRot.y = 172;
+		else if (_currentRot.y < 4.5)
+			_currentRot.y = 4.5;
+
+		glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, 1));
+		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(1, 0, 0));
+		currentRot = rotX * rotY;
+
+
+
+		GetGameObject()->SetRotation(currentRot);
+
+
+
+		_prevMousePos = currentMousePos;
+
+		glm::vec3 input = glm::vec3(0.0f);
+		if (glfwGetKey(_window, GLFW_KEY_W)) {
+			input.z = -_moveSpeeds.x;
+		}
+		if (glfwGetKey(_window, GLFW_KEY_S)) {
+			input.z = _moveSpeeds.x;
+		}
+		if (glfwGetKey(_window, GLFW_KEY_A)) {
+			input.x = -_moveSpeeds.y;
+		}
+		if (glfwGetKey(_window, GLFW_KEY_D)) {
+			input.x = _moveSpeeds.y;
+		}
+
+		glm::vec3 worldMovement = currentRot * glm::vec4(input, 1.0f);
+
+
+		if (_body == nullptr) {
+			GetGameObject()->SetPostion(GetGameObject()->GetPosition() + worldMovement);
+			return;
+		}
+
+
+		_body->SetAngularFactor(glm::vec3(0, 0, 0));
+
+		glm::vec3 physicsMovement = worldMovement;
+
+		physicsMovement.z = 0.0f;
+
+		btCollisionWorld::ClosestRayResultCallback hit(ToBt(GetGameObject()->GetPosition()), ToBt( GetGameObject()->GetPosition() + glm::vec3(0, 0, -1.0f) ));
+		_scene->GetPhysicsWorld()->rayTest(ToBt(GetGameObject()->GetPosition()), ToBt(GetGameObject()->GetPosition() + glm::vec3(0, 0, -1.0f)), hit);
+
+		if (hit.hasHit()) {
+			if (glfwGetKey(_window, GLFW_KEY_SPACE)) {
+				std::cout << "JUMPP\n";
+				_jumpTimer = 0.0f;
+			}
+		}
+
+		if (_jumpTimer <= 0.5f) {
+			_jumpTimer += deltaTime;
+			physicsMovement.z = _moveSpeeds.z;
+		}
+
+		physicsMovement.z += -98.1f;
+
+		_body->SetLinearVelocity(glm::vec3(physicsMovement * deltaTime));
+		//_body->ApplyImpulse(physicsMovement * deltaTime);
+
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	}
+	else {
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+}
+
 void SimpleCameraControl::Update(float deltaTime)
 {
-	if (Application::Get().IsFocused) {
-		if (InputEngine::GetMouseState(GLFW_MOUSE_BUTTON_LEFT) == ButtonState::Pressed) {
-			_prevMousePos = InputEngine::GetMousePos();   
-		}
-
-		if (InputEngine::IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-			glm::dvec2 currentMousePos = InputEngine::GetMousePos();
-			glm::dvec2 delta = currentMousePos - _prevMousePos;
-
-			_currentRot.x += static_cast<float>(delta.x) * _mouseSensitivity.x;
-			_currentRot.y += static_cast<float>(delta.y) * _mouseSensitivity.y;
-			glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, 1));
-			glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(1, 0, 0));
-			glm::quat currentRot = rotX * rotY;
-			GetGameObject()->SetRotation(currentRot);
-
-			_prevMousePos = currentMousePos;
-
-			glm::vec3 input = glm::vec3(0.0f);
-			if (InputEngine::IsKeyDown(GLFW_KEY_W)) {
-				input.z -= _moveSpeeds.x;
-			}
-			if (InputEngine::IsKeyDown(GLFW_KEY_S)) {
-				input.z += _moveSpeeds.x;
-			}
-			if (InputEngine::IsKeyDown(GLFW_KEY_A)) {
-				input.x -= _moveSpeeds.y;
-			}
-			if (InputEngine::IsKeyDown(GLFW_KEY_D)) {
-				input.x += _moveSpeeds.y;
-			}
-			if (InputEngine::IsKeyDown(GLFW_KEY_LEFT_CONTROL)) {
-				input.y -= _moveSpeeds.z;
-			}
-			if (InputEngine::IsKeyDown(GLFW_KEY_SPACE)) {
-				input.y += _moveSpeeds.z;
-			}
-
-			if (InputEngine::IsKeyDown(GLFW_KEY_LEFT_SHIFT)) {
-				input *= _shiftMultipler;
-			}
-
-			input *= deltaTime;
-
-			glm::vec3 worldMovement = currentRot * glm::vec4(input, 1.0f);
-			GetGameObject()->SetPostion(GetGameObject()->GetPosition() + worldMovement);
-		}
-	}
-	_prevMousePos = InputEngine::GetMousePos();
+	Movement(deltaTime);
 }
 
 void SimpleCameraControl::RenderImGui()
@@ -79,9 +153,6 @@ void SimpleCameraControl::RenderImGui()
 	LABEL_LEFT(ImGui::DragFloat2, "Mouse Sensitivity", &_mouseSensitivity.x, 0.01f);
 	LABEL_LEFT(ImGui::DragFloat3, "Move Speed       ", &_moveSpeeds.x, 0.01f, 0.01f);
 	LABEL_LEFT(ImGui::DragFloat , "Shift Multiplier ", &_shiftMultipler, 0.01f, 1.0f);
-	ImGui::Text((~InputEngine::GetMouseState(GLFW_MOUSE_BUTTON_LEFT)).c_str());
-	glm::dvec2 delta = InputEngine::GetMousePos() - _prevMousePos;
-	ImGui::Text("%d, %d", delta.x, delta.y);
 }
 
 nlohmann::json SimpleCameraControl::ToJson() const {

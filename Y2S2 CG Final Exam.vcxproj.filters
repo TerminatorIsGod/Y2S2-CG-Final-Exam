@@ -90,6 +90,9 @@
     <ClInclude Include="src\Application\Layers\PostProcessing\DepthOfField.h">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="src\Application\Layers\PostProcessing\FilmGrain.h">
+      <Filter>Application\Layers\PostProcessing</Filter>
+    </ClInclude>
     <ClInclude Include="src\Application\Layers\PostProcessing\OutlineEffect.h">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClInclude>
@@ -127,6 +130,9 @@
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Gameplay\Components\ComponentManager.h">
+      <Filter>Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Components\EnemyMove.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Gameplay\Components\GUI\GuiPanel.h">
@@ -377,6 +383,9 @@
     <ClCompile Include="src\Application\Layers\PostProcessing\DepthOfField.cpp">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application\Layers\PostProcessing\FilmGrain.cpp">
+      <Filter>Application\Layers\PostProcessing</Filter>
+    </ClCompile>
     <ClCompile Include="src\Application\Layers\PostProcessing\OutlineEffect.cpp">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClCompile>
@@ -408,6 +417,9 @@
       <Filter>Application\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Gameplay\Components\Camera.cpp">
+      <Filter>Gameplay\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Components\EnemyMove.cpp">
       <Filter>Gameplay\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Gameplay\Components\GUI\GuiPanel.cpp">

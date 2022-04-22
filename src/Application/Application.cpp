@@ -62,6 +62,7 @@
 #include "Layers/InstancedRenderingTestLayer.h"
 #include "Layers/ParticleLayer.h"
 #include "Layers/PostProcessingLayer.h"
+#include <Gameplay/Components/EnemyMove.h>
 
 Application* Application::_singleton = nullptr;
 std::string Application::_applicationName = "INFR-2350U - DEMO";
@@ -72,7 +73,7 @@ std::string Application::_applicationName = "INFR-2350U - DEMO";
 Application::Application() :
 	_window(nullptr),
 	_windowSize({DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}),
-	_isRunning(false),
+	_isRunning(true),
 	_isEditor(true),
 	_windowTitle("INFR - 2350U"),
 	_currentScene(nullptr),
@@ -108,6 +109,10 @@ void Application::SetPrimaryViewport(const glm::uvec4& value) {
 void Application::ResizeWindow(const glm::ivec2& newSize)
 {
 	_HandleWindowSizeChanged(newSize);
+}
+
+void Application::RestartScene(std::string name) {
+	LoadScene(name);
 }
 
 void Application::Quit() {
@@ -279,6 +284,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<Light>();
 	ComponentManager::RegisterType<ShadowCamera>();
 	ComponentManager::RegisterType<ShipMoveBehaviour>();
+	ComponentManager::RegisterType<EnemyMove>();
 }
 
 void Application::_Load() {
