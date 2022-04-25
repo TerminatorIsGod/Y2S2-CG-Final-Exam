@@ -78,11 +78,7 @@ void SimpleCameraControl::Movement(float deltaTime)
 		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(1, 0, 0));
 		currentRot = rotX * rotY;
 
-
-
 		GetGameObject()->SetRotation(currentRot);
-
-
 
 		_prevMousePos = currentMousePos;
 
@@ -110,9 +106,7 @@ void SimpleCameraControl::Movement(float deltaTime)
 
 
 		_body->SetAngularFactor(glm::vec3(0, 0, 0));
-
 		glm::vec3 physicsMovement = worldMovement;
-
 		physicsMovement.z = 0.0f;
 
 		btCollisionWorld::ClosestRayResultCallback hit(ToBt(GetGameObject()->GetPosition()), ToBt( GetGameObject()->GetPosition() + glm::vec3(0, 0, -1.0f) ));
@@ -120,7 +114,6 @@ void SimpleCameraControl::Movement(float deltaTime)
 
 		if (hit.hasHit()) {
 			if (glfwGetKey(_window, GLFW_KEY_SPACE)) {
-				std::cout << "JUMPP\n";
 				_jumpTimer = 0.0f;
 			}
 		}
@@ -131,10 +124,7 @@ void SimpleCameraControl::Movement(float deltaTime)
 		}
 
 		physicsMovement.z += -98.1f;
-
 		_body->SetLinearVelocity(glm::vec3(physicsMovement * deltaTime));
-		//_body->ApplyImpulse(physicsMovement * deltaTime);
-
 		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	}
 	else {

@@ -510,7 +510,6 @@ void DefaultSceneLayer::_CreateScene()
 			emitter.Type = ParticleType::SphereEmitter;
 			emitter.TexID = 2;
 			emitter.Position = glm::vec3(0.0f);
-			emitter.Color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 			emitter.Lifetime = 1.0f / 50.0f;
 			emitter.SphereEmitterData.Timer = 1.0f / 50.0f;
 			emitter.SphereEmitterData.Velocity = 0.5f;
@@ -520,6 +519,20 @@ void DefaultSceneLayer::_CreateScene()
 			emitter.Color = glm::vec4(0.8f,0.8f,0.8f,0.5f);
 
 			particleManager->AddEmitter(emitter);
+
+			ParticleSystem::ParticleData emitter2;
+			emitter2.Type = ParticleType::SphereEmitter;
+			emitter2.TexID = 3;
+			emitter2.Position = glm::vec3(0.0f);
+			emitter2.Lifetime = 1.0f / 50.0f;
+			emitter2.SphereEmitterData.Timer = 1.0f / 50.0f;
+			emitter2.SphereEmitterData.Velocity = 0.7f;
+			emitter2.SphereEmitterData.LifeRange = { 1.0f, 3.0f };
+			emitter2.SphereEmitterData.Radius = 1.0f;
+			emitter2.SphereEmitterData.SizeRange = { 2.0f, 2.0f };
+			emitter2.Color = glm::vec4(0.8f, 0.8f, 0.8f, 0.5f);
+
+			particleManager->AddEmitter(emitter2);
 
 			demoBase->AddChild(ghost);
 		}

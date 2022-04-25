@@ -29,6 +29,8 @@ protected:
 	float _impulse;
 	float _speed;
 
+	glm::vec3 direc;
+
 	bool _isPressed = false;
 	Gameplay::Physics::RigidBody::Sptr _body;
 };
