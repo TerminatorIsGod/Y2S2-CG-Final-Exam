@@ -372,6 +372,48 @@ void RenderLayer::_ClearFramebuffer(Framebuffer::Sptr& buffer, const glm::vec4* 
 	// Reset depth test function to default
 	glDepthFunc(GL_LESS);
 }
+void RenderLayer::OnUpdate() {
+	using namespace Gameplay;
+	Application& app = Application::Get();
+	Scene::Sptr& scene = app.CurrentScene();
+
+	//lighting input Toggle
+	if (InputEngine::GetKeyState(GLFW_KEY_1) == ButtonState::Pressed)
+	{
+		_specularToggle = !_specularToggle;
+		std::cout << "Specular Toggle pressed\n";
+	}
+
+	if (InputEngine::GetKeyState(GLFW_KEY_2) == ButtonState::Pressed)
+	{
+		_diffuseToggle = !_diffuseToggle;
+		std::cout << "Diffuse Toggle pressed\n";
+	}
+
+	if (InputEngine::GetKeyState(GLFW_KEY_3) == ButtonState::Pressed)
+	{
+		_ambientToggle = !_ambientToggle;
+		std::cout << "Ambient Toggle pressed\n";
+	}
+
+	if (_specularToggle) {
+		_renderFlags = RenderFlags::EnableSpecular;
+	}
+
+	if (_diffuseToggle) {
+		_renderFlags = RenderFlags::EnableDiffuse;
+	}
+
+	if (_ambientToggle) {
+		scene->SetAmbientLight(glm::vec3(0.2f));
+	}
+	else {
+		scene->SetAmbientLight(glm::vec3(0.0f));
+	}
+	
+
+
+}
 
 void RenderLayer::OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& newSize)
 {

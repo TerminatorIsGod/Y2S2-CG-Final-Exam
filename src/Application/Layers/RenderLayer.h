@@ -4,12 +4,16 @@
 #include "Graphics/Buffers/UniformBuffer.h"
 #include "Graphics/ShaderProgram.h"
 #include "Graphics/VertexArrayObject.h"
+#include "Gameplay/InputEngine.h"
 
 #define MAX_LIGHTS 8
 
 ENUM_FLAGS(RenderFlags, uint32_t,
 	None = 0,
-	EnableColorCorrection = 1 << 0
+	EnableColorCorrection = 1 << 0,
+	EnableSpecular = 1<<2,
+	EnableAmbient = 1<<3,
+	EnableDiffuse = 1<<4
 );
 
 class RenderLayer final : public ApplicationLayer {
@@ -124,7 +128,13 @@ public:
 	virtual void OnPostRender() override;
 	virtual void OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& newSize) override;
 
+	virtual void OnUpdate();
+
 protected:
+	bool _specularToggle = true;
+	bool _diffuseToggle = true;
+	bool _ambientToggle = true;
+
 	Framebuffer::Sptr   _primaryFBO;
 	Framebuffer::Sptr   _lightingFBO;
 	Framebuffer::Sptr   _outputBuffer;

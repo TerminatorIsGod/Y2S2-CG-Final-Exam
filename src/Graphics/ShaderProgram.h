@@ -156,7 +156,7 @@ public:
 		if (location != -1) {
 			SetUniform(location, &value, 1);
 		} else {
-			LOG_WARN("Ignoring uniform \"{}\"", name);
+		//	LOG_WARN("Ignoring uniform \"{}\"", name);
 		}
 	}
 	template <typename T>
@@ -165,7 +165,7 @@ public:
 		if (location != -1) {
 			SetUniform(location, values, count);
 		} else {
-			LOG_WARN("Ignoring uniform \"{}\"", name);
+			//LOG_WARN("Ignoring uniform \"{}\"", name);
 		}
 	}
 	template <typename T>
@@ -174,7 +174,7 @@ public:
 		if (location != -1) {
 			SetUniformMatrix(location, &value, 1, transposed);
 		} else {
-			LOG_WARN("Ignoring uniform \"{}\"", name);
+			//LOG_WARN("Ignoring uniform \"{}\"", name);
 		}
 	}
 	

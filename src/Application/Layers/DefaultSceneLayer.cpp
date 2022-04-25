@@ -141,12 +141,22 @@ void DefaultSceneLayer::_CreateScene()
 		// Load in the meshes
 		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("Monkey.obj");
 		MeshResource::Sptr shipMesh   = ResourceManager::CreateAsset<MeshResource>("fenrir.obj");
+		MeshResource::Sptr ghostMesh = ResourceManager::CreateAsset<MeshResource>("ghostModel.obj");
 
 		// Load in some textures
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/box-diffuse.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
 		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/monkey-uvMap.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
+
+		Texture2D::Sptr    ghostTex = ResourceManager::CreateAsset<Texture2D>("textures/GhostTex.png"); 
+
+		Texture2D::Sptr    wallTex = ResourceManager::CreateAsset<Texture2D>("textures/WoodPanel.png");
+		// Attribute: TextureQueen https://www.deviantart.com/celestialsunberry/art/SUNNY-Cool-Wood-Paneling-363120685
+
+		Texture2D::Sptr    carpetTex = ResourceManager::CreateAsset<Texture2D>("textures/RedCarpet.png"); 
+		//Attribute: Sketchup Texture https://www.pinterest.ca/pin/499688521147242611/
+
 		leafTex->SetMinFilter(MinFilter::Nearest);
 		leafTex->SetMagFilter(MagFilter::Nearest);
 
@@ -329,6 +339,36 @@ void DefaultSceneLayer::_CreateScene()
 			multiTextureMat->Set("u_Scale", 0.1f); 
 		}
 
+		Material::Sptr ghostMaterial = ResourceManager::CreateAsset<Material>(foliageShader);
+		{
+			ghostMaterial->Name = "ghost Shader";
+			ghostMaterial->Set("u_Material.AlbedoMap", ghostTex);
+			ghostMaterial->Set("u_Material.Shininess", 0.1f);
+			ghostMaterial->Set("u_Material.DiscardThreshold", 0.1f);
+			ghostMaterial->Set("u_Material.NormalMap", normalMapDefault);
+
+			ghostMaterial->Set("u_WindDirection", glm::vec3(1.0f, 1.0f, 0.0f));
+			ghostMaterial->Set("u_WindStrength", 0.5f);
+			ghostMaterial->Set("u_VerticalScale", 1.0f);
+			ghostMaterial->Set("u_WindSpeed", 1.0f);
+		}
+
+		Material::Sptr carpetMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		{
+			carpetMaterial->Name = "Carpet mat";
+			carpetMaterial->Set("u_Material.AlbedoMap", carpetTex);
+			carpetMaterial->Set("u_Material.Shininess", 0.1f);
+			carpetMaterial->Set("u_Material.NormalMap", normalMapDefault);
+		}
+
+		Material::Sptr wallMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		{
+			wallMaterial->Name = "Wall Mat";
+			wallMaterial->Set("u_Material.AlbedoMap", wallTex);
+			wallMaterial->Set("u_Material.Shininess", 0.1f);
+			wallMaterial->Set("u_Material.NormalMap", normalMapDefault);
+		}
+
 		// Create some lights for our scene
 		GameObject::Sptr lightParent = scene->CreateGameObject("Lights");
 
@@ -381,7 +421,7 @@ void DefaultSceneLayer::_CreateScene()
 			// Create and attach a RenderComponent to the object to draw our mesh
 			RenderComponent::Sptr renderer = plane->Add<RenderComponent>();
 			renderer->SetMesh(tiledMesh);
-			renderer->SetMaterial(boxMaterial);
+			renderer->SetMaterial(carpetMaterial);
 
 			// Attach a plane collider that extends infinitely along the X/Y axis
 			RigidBody::Sptr physics = plane->Add<RigidBody>(/*static by default*/);
@@ -395,25 +435,25 @@ void DefaultSceneLayer::_CreateScene()
 			wall->GenerateMesh();
 
 			GameObject::Sptr wall1 = scene->CreateGameObject("Wall1");
-			wall1->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(whiteBrick);
+			wall1->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall1->SetScale(glm::vec3(20.0f, 1.0f, 3.0f));
 			wall1->SetPostion(glm::vec3(0.0f, 10.0f, 1.5f));
 			plane->AddChild(wall1);
 
 			GameObject::Sptr wall2 = scene->CreateGameObject("Wall2");
-			wall2->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(whiteBrick);
+			wall2->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall2->SetScale(glm::vec3(20.0f, 1.0f, 3.0f));
 			wall2->SetPostion(glm::vec3(0.0f, -10.0f, 1.5f));
 			plane->AddChild(wall2);
 
 			GameObject::Sptr wall3 = scene->CreateGameObject("Wall3");
-			wall3->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(whiteBrick);
+			wall3->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall3->SetScale(glm::vec3(1.0f, 20.0f, 3.0f));
 			wall3->SetPostion(glm::vec3(10.0f, 0.0f, 1.5f));
 			plane->AddChild(wall3);
 
 			GameObject::Sptr wall4 = scene->CreateGameObject("Wall4");
-			wall4->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(whiteBrick);
+			wall4->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall4->SetScale(glm::vec3(1.0f, 20.0f, 3.0f));
 			wall4->SetPostion(glm::vec3(-10.0f, 0.0f, 1.5f));
 			plane->AddChild(wall4);
@@ -424,28 +464,29 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// sphere to showcase the foliage material
-		GameObject::Sptr foliageBall = scene->CreateGameObject("Foliage Sphere");
+		GameObject::Sptr ghost = scene->CreateGameObject("Ghost");
 		{
 			// Set and rotation position in the scene
-			foliageBall->SetPostion(glm::vec3(-4.0f, -4.0f, 1.0f));
-			foliageBall->SetScale(glm::vec3(0.25f));
+			ghost->SetPostion(glm::vec3(-4.0f, -4.0f, 1.0f));
+			ghost->SetRotation(glm::vec3(-90.0f,-180.0f,0.0f));
+			ghost->SetScale(glm::vec3(0.25f));
 
 			// Add a render component
-			RenderComponent::Sptr renderer = foliageBall->Add<RenderComponent>();
-			renderer->SetMesh(sphere);
-			renderer->SetMaterial(foliageMaterial);
+			RenderComponent::Sptr renderer = ghost->Add<RenderComponent>();
+			renderer->SetMesh(ghostMesh);
+			renderer->SetMaterial(ghostMaterial);
 
-			foliageBall->Add<EnemyMove>();
+			ghost->Add<EnemyMove>();
 
 			//RigidBody::Sptr physics = foliageBall->Add<RigidBody>(RigidBodyType::Dynamic);
 			//physics->AddCollider(SphereCollider::Create(1.8f));
 
-			TriggerVolume::Sptr trigger = foliageBall->Add<TriggerVolume>();
+			TriggerVolume::Sptr trigger = ghost->Add<TriggerVolume>();
 			trigger->SetFlags(TriggerTypeFlags::Statics | TriggerTypeFlags::Kinematics);
 			trigger->AddCollider(SphereCollider::Create(0.25f));
 
 			GameObject::Sptr particles = scene->CreateGameObject("Particles");
-			foliageBall->AddChild(particles);
+			ghost->AddChild(particles);
 			particles->SetPostion({ 0.0f, -7.0f, 0.0f });
 
 			ParticleSystem::Sptr particleManager = particles->Add<ParticleSystem>();
@@ -463,11 +504,11 @@ void DefaultSceneLayer::_CreateScene()
 			emitter.SphereEmitterData.Velocity = 0.5f;
 			emitter.SphereEmitterData.LifeRange = { 1.0f, 3.0f };
 			emitter.SphereEmitterData.Radius = 0.5f;
-			emitter.SphereEmitterData.SizeRange = { 0.5f, 1.0f };
+			emitter.SphereEmitterData.SizeRange = { 5.0f, 5.0f };
 
 			particleManager->AddEmitter(emitter);
 
-			demoBase->AddChild(foliageBall);
+			demoBase->AddChild(ghost);
 		}
 
 
