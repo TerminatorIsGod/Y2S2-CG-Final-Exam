@@ -9,6 +9,7 @@
 #include "PostProcessing/OutlineEffect.h"
 #include "PostProcessing/DepthOfField.h"
 #include "PostProcessing/FilmGrain.h"
+#include "PostProcessing/PixelationEffect.h"
 
 PostProcessingLayer::PostProcessingLayer() :
 	ApplicationLayer()
@@ -36,6 +37,7 @@ void PostProcessingLayer::OnAppLoad(const nlohmann::json& config)
 	_effects.push_back(std::make_shared<OutlineEffect>());
 	_effects.push_back(std::make_shared<DepthOfField>());
 	_effects.push_back(std::make_shared<FilmGrain>());
+	_effects.push_back(std::make_shared<PixelationEffect>());
 
 	GetEffect<OutlineEffect>()->Enabled = true;
 	GetEffect<FilmGrain>()->Enabled = true;
