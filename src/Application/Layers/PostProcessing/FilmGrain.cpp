@@ -24,7 +24,7 @@ void FilmGrain::Apply(const Framebuffer::Sptr & gBuffer)
 	_shader->Bind();
 	_shader->SetUniform("u_Intensity", _intensity);
 	gBuffer->BindAttachment(RenderTargetAttachment::Depth, 1);
-	gBuffer->BindAttachment(RenderTargetAttachment::Color1, 2); // The normal buffer
+	gBuffer->BindAttachment(RenderTargetAttachment::Color1, 2);
 }
 
 void FilmGrain::RenderImGui()
@@ -35,9 +35,7 @@ void FilmGrain::RenderImGui()
 FilmGrain::Sptr FilmGrain::FromJson(const nlohmann::json & data)
 {
 	FilmGrain::Sptr result = std::make_shared<FilmGrain>();
-
 	result->_intensity = JsonGet(data, "intensity", result->_intensity);
-
 	return result;
 }
 

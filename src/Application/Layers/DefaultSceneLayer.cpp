@@ -396,7 +396,7 @@ void DefaultSceneLayer::_CreateScene()
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		{
 			camera->Name = "Player";
-			camera->SetPostion({ -9, -6, 1 });
+			camera->SetPostion({ -8, -5, 1 });
 			camera->LookAt(glm::vec3(0.0f));
 
 			camera->Add<SimpleCameraControl>();
@@ -428,7 +428,7 @@ void DefaultSceneLayer::_CreateScene()
 			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
 		}
 
-		// Add some walls :3
+		// Steal some code :3
 		{
 			MeshResource::Sptr wall = ResourceManager::CreateAsset<MeshResource>();
 			wall->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
@@ -439,24 +439,36 @@ void DefaultSceneLayer::_CreateScene()
 			wall1->SetScale(glm::vec3(20.0f, 1.0f, 3.0f));
 			wall1->SetPostion(glm::vec3(0.0f, 10.0f, 1.5f));
 			plane->AddChild(wall1);
+			RigidBody::Sptr physics1 = wall1->Add<RigidBody>(/*static by default*/);
+			physics1->AddCollider(BoxCollider::Create(glm::vec3(20.0f, 0.1f, 3.0f)))->SetPosition({ 0,0,0 });
+			physics1->SetMass(0.0f);
 
 			GameObject::Sptr wall2 = scene->CreateGameObject("Wall2");
 			wall2->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall2->SetScale(glm::vec3(20.0f, 1.0f, 3.0f));
 			wall2->SetPostion(glm::vec3(0.0f, -10.0f, 1.5f));
 			plane->AddChild(wall2);
+			RigidBody::Sptr physics2 = wall2->Add<RigidBody>(/*static by default*/);
+			physics2->AddCollider(BoxCollider::Create(glm::vec3(20.0f, 0.1f, 3.0f)))->SetPosition({ 0,0,0 });
+			physics2->SetMass(0.0f);
 
 			GameObject::Sptr wall3 = scene->CreateGameObject("Wall3");
 			wall3->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall3->SetScale(glm::vec3(1.0f, 20.0f, 3.0f));
 			wall3->SetPostion(glm::vec3(10.0f, 0.0f, 1.5f));
 			plane->AddChild(wall3);
+			RigidBody::Sptr physics3 = wall3->Add<RigidBody>(/*static by default*/);
+			physics3->AddCollider(BoxCollider::Create(glm::vec3(0.1f, 20.0f, 3.0f)))->SetPosition({ 0,0,0 });
+			physics3->SetMass(0.0f);
 
 			GameObject::Sptr wall4 = scene->CreateGameObject("Wall4");
 			wall4->Add<RenderComponent>()->SetMesh(wall)->SetMaterial(wallMaterial);
 			wall4->SetScale(glm::vec3(1.0f, 20.0f, 3.0f));
 			wall4->SetPostion(glm::vec3(-10.0f, 0.0f, 1.5f));
 			plane->AddChild(wall4);
+			RigidBody::Sptr physics4 = wall4->Add<RigidBody>(/*static by default*/);
+			physics4->AddCollider(BoxCollider::Create(glm::vec3(0.1f, 20.0f, 3.0f)))->SetPosition({ 0,0,0 });
+			physics4->SetMass(0.0f);
 		}
 
 
@@ -487,7 +499,7 @@ void DefaultSceneLayer::_CreateScene()
 
 			GameObject::Sptr particles = scene->CreateGameObject("Particles");
 			ghost->AddChild(particles);
-			particles->SetPostion({ 0.0f, -7.0f, 0.0f });
+			particles->SetPostion({ 0.0f, 0.0f, 0.0f });
 
 			ParticleSystem::Sptr particleManager = particles->Add<ParticleSystem>();
 			particleManager->Atlas = particleTex;
@@ -505,6 +517,7 @@ void DefaultSceneLayer::_CreateScene()
 			emitter.SphereEmitterData.LifeRange = { 1.0f, 3.0f };
 			emitter.SphereEmitterData.Radius = 0.5f;
 			emitter.SphereEmitterData.SizeRange = { 5.0f, 5.0f };
+			emitter.Color = glm::vec4(0.8f,0.8f,0.8f,0.5f);
 
 			particleManager->AddEmitter(emitter);
 
@@ -515,7 +528,7 @@ void DefaultSceneLayer::_CreateScene()
 		GameObject::Sptr shadowCaster = scene->CreateGameObject("Shadow Light");
 		{
 			// Set position in the scene
-			shadowCaster->SetPostion(glm::vec3(3.0f, 3.0f, 5.0f));
+			shadowCaster->SetPostion(glm::vec3(1.0f, 20.0f, 3.0f));
 			shadowCaster->LookAt(glm::vec3(0.0f));
 
 			// Create and attach a renderer for the monkey
@@ -526,7 +539,7 @@ void DefaultSceneLayer::_CreateScene()
 		GameObject::Sptr shadowCaster2 = scene->CreateGameObject("Shadow Light 2");
 		{
 			// Set position in the scene
-			shadowCaster2->SetPostion(glm::vec3(3.0f, 3.0f, 5.0f));
+			shadowCaster2->SetPostion(glm::vec3(16.0f, -8.0f, 6.0f));
 			shadowCaster2->LookAt(glm::vec3(0.0f));
 
 			// Create and attach a renderer for the monkey

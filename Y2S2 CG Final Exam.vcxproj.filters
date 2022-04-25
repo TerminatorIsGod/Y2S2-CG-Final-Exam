@@ -96,6 +96,9 @@
     <ClInclude Include="src\Application\Layers\PostProcessing\OutlineEffect.h">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="src\Application\Layers\PostProcessing\PixelationEffect.h">
+      <Filter>Application\Layers\PostProcessing</Filter>
+    </ClInclude>
     <ClInclude Include="src\Application\Layers\PostProcessingLayer.h">
       <Filter>Application\Layers</Filter>
     </ClInclude>
@@ -387,6 +390,9 @@
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClCompile>
     <ClCompile Include="src\Application\Layers\PostProcessing\OutlineEffect.cpp">
+      <Filter>Application\Layers\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Layers\PostProcessing\PixelationEffect.cpp">
       <Filter>Application\Layers\PostProcessing</Filter>
     </ClCompile>
     <ClCompile Include="src\Application\Layers\PostProcessingLayer.cpp">

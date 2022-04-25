@@ -13,8 +13,6 @@ public:
 	virtual void Apply(const Framebuffer::Sptr& gBuffer) override;
 	virtual void RenderImGui() override;
 
-	// Inherited from IResource
-
 	FilmGrain::Sptr FromJson(const nlohmann::json& data);
 	virtual nlohmann::json ToJson() const override;
 

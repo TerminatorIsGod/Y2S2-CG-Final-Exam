@@ -18,7 +18,7 @@ SimpleCameraControl::SimpleCameraControl() :
 	_moveSpeeds(glm::vec3(200.0f)),
 	_shiftMultipler(2.0f),
 	_currentRot(glm::vec2(0.0f)),
-	_isMousePressed(false)
+	_isMousePressed(true)
 { }
 
 SimpleCameraControl::~SimpleCameraControl() = default;
